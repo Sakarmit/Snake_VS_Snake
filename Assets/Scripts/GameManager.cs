@@ -6,6 +6,11 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] int width = 16;
     [SerializeField] int height = 10;
+    
+    //Accessible variables indicating whether the width and height are odd
+    //Quick access for offsetting elements on grid accordingly
+    public bool oddX, oddY;
+
     new GameObject camera;
     GameObject board;
 
@@ -20,6 +25,9 @@ public class GameManager : MonoBehaviour
 
         //Update camera & board size based on width and height variables
         UpdateCameraAndBoardSize();
+
+        oddX = width % 2 == 1;
+        oddY = height % 2 == 1;
     }
 
     // Update is called once per frame
