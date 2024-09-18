@@ -6,11 +6,8 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] int width = 16;
     [SerializeField] int height = 10;
-    
-    //Accessible variables indicating whether the width and height are odd
-    //Quick access for offsetting elements on grid accordingly
-    public bool oddX, oddY;
 
+    public GameObject snakePrefab;
     new GameObject camera;
     GameObject board;
 
@@ -26,8 +23,7 @@ public class GameManager : MonoBehaviour
         //Update camera & board size based on width and height variables
         UpdateCameraAndBoardSize();
 
-        oddX = width % 2 == 1;
-        oddY = height % 2 == 1;
+        spawnSnake();
     }
 
     // Update is called once per frame
@@ -47,5 +43,11 @@ public class GameManager : MonoBehaviour
 
         Camera cameraComp = camera.GetComponent<Camera>();
         cameraComp.orthographicSize = Mathf.Max(height * 0.25f, width * 0.140714f);
+    }
+
+    void spawnSnake() {
+        float randX = 0.50f*Random.Range(1, width) - 0.25f*(width + 1);
+        float randY = 0.50f*Random.Range(1, height) - 0.25f*(height + 1);
+        Instantiate(snakePrefab, new Vector3(randX, randY, 0), Quaternion.identity);
     }
 }
