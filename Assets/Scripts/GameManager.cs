@@ -7,6 +7,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] int width = 16;
     [SerializeField] int height = 10;
 
+    float[] widthMinMax;
+    float[] heightMinMax = new float[2];
+
     public GameObject snakePrefab;
     new GameObject camera;
     GameObject board;
@@ -43,11 +46,17 @@ public class GameManager : MonoBehaviour
 
         Camera cameraComp = camera.GetComponent<Camera>();
         cameraComp.orthographicSize = Mathf.Max(height * 0.25f, width * 0.140714f);
+
+        widthMinMax = new float[] {0.25f - 0.25f*width, 0.25f*width - 0.25f};
+        heightMinMax = new float[] {0.25f - 0.25f*height, 0.25f*height - 0.25f};
     }
 
     void spawnSnake() {
         float randX = 0.50f*Random.Range(1, width) - 0.25f*(width + 1);
         float randY = 0.50f*Random.Range(1, height) - 0.25f*(height + 1);
-        Instantiate(snakePrefab, new Vector3(randX, randY, 0), Quaternion.identity);
+        GameObject snake = Instantiate(snakePrefab, new Vector3(randX, randY, 0), Quaternion.identity);
+        Snake snakeScript = snake.GetComponent<Snake>();
+        snakeScript.xRange = widthMinMax;
+        snakeScript.yRange = heightMinMax;
     }
 }
