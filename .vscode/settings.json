@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Snake_VS_Snake.sln"
+    "dotnet.defaultSolution": "Snake VS Snake.sln"
 }
