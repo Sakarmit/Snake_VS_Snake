@@ -16,6 +16,9 @@ public class Snake : MonoBehaviour
     private int rightKeyIndex= 1;
     // Should only ever me -1 (left), 0 (none), or 1 (right)
     private int nextRotationDirection = 0;
+    //Variable used to make sure snake moved atleast one grid forward after rotating
+    //Fixes rotating 180 onto itself
+    private bool movedAfterRotation = true;
 
     // Positioning/Movement related vars
     Vector3 expectedGridPosition, nextPosition;
@@ -50,6 +53,8 @@ public class Snake : MonoBehaviour
             transform.position = expectedGridPosition;
             expectedGridPosition = nextPosition;
             
+            movedAfterRotation = true;
+
             //If the current body length is greater than snake size remove body in at the tail
             if (bodyElems.Count > size) {
                 Destroy(bodyElems.Dequeue());
@@ -59,11 +64,12 @@ public class Snake : MonoBehaviour
             bodyElems.Enqueue(body);
         } else {
             //If the snaked needs to be rotated then rotating and updating input keys
-            if (nextRotationDirection != 0) {
+            if (movedAfterRotation && nextRotationDirection != 0) {
                 transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
                 rightKeyIndex = (rightKeyIndex + nextRotationDirection + 2) % 4;
                 leftKeyIndex = (leftKeyIndex + nextRotationDirection + 2) % 4;
                 nextRotationDirection = 0;
+                movedAfterRotation = false;
             }
         }
     }
