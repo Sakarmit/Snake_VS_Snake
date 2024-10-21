@@ -19,7 +19,6 @@ public class Snake : MonoBehaviour
 
     // Positioning/Movement related vars
     Vector3 expectedGridPosition, nextPosition;
-    bool canUpdatePosition = true;
     private float satisfactionDistance = 0.09f;
 
     // Snake Info
@@ -39,42 +38,38 @@ public class Snake : MonoBehaviour
 
     void Update()
     {
-        if (canUpdatePosition) {
-            getInput();
-        }
+        getInput();
     }
 
     void FixedUpdate() {
         updatePosition();
-        if (Vector3.Distance(transform.position, expectedGridPosition) < satisfactionDistance) {
+
+        float distanceFromExpectedPosition = Vector3.Distance(transform.position, expectedGridPosition);
+        if (distanceFromExpectedPosition < satisfactionDistance) {
             loopToBoard();
             transform.position = expectedGridPosition;
             expectedGridPosition = nextPosition;
 
-            transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
-            nextRotationDirection = 0;
-            
+            if (nextRotationDirection != 0) {
+                transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
+                rightKeyIndex = (rightKeyIndex + nextRotationDirection + 2) % 4;
+                leftKeyIndex = (leftKeyIndex + nextRotationDirection + 2) % 4;
+                nextRotationDirection = 0;
+            }
+
             if (bodyElems.Count > size) {
                 Destroy(bodyElems.Dequeue());
             }
             GameObject body = Instantiate(bodyPrefab, transform.position, transform.rotation);
             bodyElems.Enqueue(body);
-
-            canUpdatePosition = true;
         }
     }
 
     void getInput() {
         if (Input.GetKeyDown(inputKeys[rightKeyIndex])) {
             nextRotationDirection = -1;
-            rightKeyIndex = (rightKeyIndex+1) % 4;
-            leftKeyIndex = (leftKeyIndex+1) % 4;
-            canUpdatePosition = false;
         } else if (Input.GetKeyDown(inputKeys[leftKeyIndex])) {
             nextRotationDirection = 1;
-            leftKeyIndex = (leftKeyIndex+3) % 4;
-            rightKeyIndex = (rightKeyIndex+3) % 4;
-            canUpdatePosition = false;
         }
         nextPosition = expectedGridPosition + 0.5f * transform.up.normalized;
         targetObj.transform.position = expectedGridPosition;
