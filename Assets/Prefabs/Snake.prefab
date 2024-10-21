@@ -185,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xRange: []
   yRange: []
+  bodyPrefab: {fileID: 6189680144423841710, guid: 310cf91f13408904284befb633c20db1, type: 3}
 --- !u!1 &6206518105635907326
 GameObject:
   m_ObjectHideFlags: 0

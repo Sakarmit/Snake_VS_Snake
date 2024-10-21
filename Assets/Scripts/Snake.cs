@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,8 +7,8 @@ using UnityEngine.UIElements;
 public class Snake : MonoBehaviour
 {
     // Grid related vars
-    public float[] xRange;
-    public float[] yRange;
+    public float[] xRange = new float[2];
+    public float[] yRange = new float[2];
 
     // Rotation related vars
     private KeyCode[] inputKeys = new KeyCode[] {KeyCode.W, KeyCode.D, KeyCode.S, KeyCode.A};
@@ -20,6 +21,11 @@ public class Snake : MonoBehaviour
     Vector3 expectedGridPosition, nextPosition;
     bool canUpdatePosition = true;
     private float satisfactionDistance = 0.09f;
+
+    // Snake Info
+    [SerializeField] GameObject bodyPrefab;
+    Queue<GameObject> bodyElems = new Queue<GameObject>();
+    int size = 3;
 
     //Temp object to visualize expectedPosition change
     GameObject targetObj;
@@ -47,6 +53,12 @@ public class Snake : MonoBehaviour
 
             transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
             nextRotationDirection = 0;
+            
+            if (bodyElems.Count > size) {
+                Destroy(bodyElems.Dequeue());
+            }
+            GameObject body = Instantiate(bodyPrefab, transform.position, transform.rotation);
+            bodyElems.Enqueue(body);
 
             canUpdatePosition = true;
         }
