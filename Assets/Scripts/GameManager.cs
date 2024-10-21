@@ -51,10 +51,15 @@ public class GameManager : MonoBehaviour
         heightMinMax = new float[2] {0.25f - 0.25f*height, 0.25f*height - 0.25f};
     }
 
-    void spawnSnake() {
+    GameObject spawnObject(GameObject spawningObject) {
         float randX = 0.50f*Random.Range(1, width) - 0.25f*(width + 1);
         float randY = 0.50f*Random.Range(1, height) - 0.25f*(height + 1);
-        GameObject snake = Instantiate(snakePrefab, new Vector3(randX, randY, 0), Quaternion.identity);
+
+        return Instantiate(spawningObject, new Vector3(randX, randY, 0), Quaternion.identity);
+    }
+    
+    void spawnSnake() {
+        GameObject snake = spawnObject(snakePrefab);
         Snake snakeScript = snake.GetComponent<Snake>();
         
         snakeScript.xRange = widthMinMax;
