@@ -36,17 +36,17 @@ public class GameManager : MonoBehaviour
     }
 
     void UpdateCameraAndBoardSize() {
-        //Get background grid object
-
         //Get the render of the grid object
         SpriteRenderer gridRender = board.GetComponent<SpriteRenderer>();
 
         //Set actual grid width and height based on width and height fields
         gridRender.size = new Vector2(width * 0.5f, height * 0.5f);
 
+        //Set the camera to fit grid minimizing on eddge on either width or height
         Camera cameraComp = camera.GetComponent<Camera>();
         cameraComp.orthographicSize = Mathf.Max(height * 0.25f, width * 0.140714f);
 
+        //Find the centers of min and max grid width and height cells
         widthMinMax = new float[2] {0.25f - 0.25f*width, 0.25f*width - 0.25f};
         heightMinMax = new float[2] {0.25f - 0.25f*height, 0.25f*height - 0.25f};
     }

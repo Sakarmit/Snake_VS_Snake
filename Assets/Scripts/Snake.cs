@@ -49,19 +49,22 @@ public class Snake : MonoBehaviour
             loopToBoard();
             transform.position = expectedGridPosition;
             expectedGridPosition = nextPosition;
-
+            
+            //If the current body length is greater than snake size remove body in at the tail
+            if (bodyElems.Count > size) {
+                Destroy(bodyElems.Dequeue());
+            }
+            //Spawn new body prefab
+            GameObject body = Instantiate(bodyPrefab, transform.position, transform.rotation);
+            bodyElems.Enqueue(body);
+        } else {
+            //If the snaked needs to be rotated then rotating and updating input keys
             if (nextRotationDirection != 0) {
                 transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
                 rightKeyIndex = (rightKeyIndex + nextRotationDirection + 2) % 4;
                 leftKeyIndex = (leftKeyIndex + nextRotationDirection + 2) % 4;
                 nextRotationDirection = 0;
             }
-
-            if (bodyElems.Count > size) {
-                Destroy(bodyElems.Dequeue());
-            }
-            GameObject body = Instantiate(bodyPrefab, transform.position, transform.rotation);
-            bodyElems.Enqueue(body);
         }
     }
 
@@ -97,6 +100,7 @@ public class Snake : MonoBehaviour
             newPos.y = ((newPos.y + yRange[1])%(2*yRange[1]))+yRange[1]+0.5f;
         } 
 
+        //If snaked was looped update all position variables
         if (transform.position != newPos) {
             expectedGridPosition = expectedGridPosition + newPos - transform.position;
             nextPosition = nextPosition + newPos - transform.position;
