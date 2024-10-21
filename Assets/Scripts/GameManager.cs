@@ -51,10 +51,19 @@ public class GameManager : MonoBehaviour
         heightMinMax = new float[2] {0.25f - 0.25f*height, 0.25f*height - 0.25f};
     }
 
+    bool isLocationEmpty(float x, float y) {
+        RaycastHit hit;
+        //Check for objects at a point ignoring grid layer
+        if (Physics.Raycast(new Vector3(x, y, 10f), Vector3.back, out hit, 15, 1<<9)) {
+            return false;
+        }
+        return true;
+    }
+
     GameObject spawnObject(GameObject spawningObject) {
         float randX = 0.50f*Random.Range(1, width) - 0.25f*(width + 1);
         float randY = 0.50f*Random.Range(1, height) - 0.25f*(height + 1);
-
+        
         return Instantiate(spawningObject, new Vector3(randX, randY, 0), Quaternion.identity);
     }
     
