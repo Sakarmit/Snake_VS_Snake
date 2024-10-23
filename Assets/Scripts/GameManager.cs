@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class GameManager : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour
         //Set actual grid width and height based on width and height fields
         gridRender.size = new Vector2(width * 0.5f, height * 0.5f);
 
-        //Set the camera to fit grid minimizing on eddge on either width or height
+        //Set the camera to fit grid minimizing on edge on either width or height
         Camera cameraComp = camera.GetComponent<Camera>();
         cameraComp.orthographicSize = Mathf.Max(height * 0.25f, width * 0.140714f);
 
@@ -52,12 +53,8 @@ public class GameManager : MonoBehaviour
     }
 
     bool isLocationEmpty(float x, float y) {
-        RaycastHit hit;
-        //Check for objects at a point ignoring grid layer
-        if (Physics.Raycast(new Vector3(x, y, 10f), Vector3.back, out hit, 15, 1<<9)) {
-            return false;
-        }
-        return true;
+        Collider2D collider = Physics2D.OverlapCircle(new Vector2(x, y), 0.25f);
+        return collider == null;
     }
 
     GameObject spawnObject(GameObject spawningObject) {

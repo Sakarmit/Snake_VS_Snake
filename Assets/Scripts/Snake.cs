@@ -16,7 +16,7 @@ public class Snake : MonoBehaviour
     private int rightKeyIndex= 1;
     // Should only ever me -1 (left), 0 (none), or 1 (right)
     private int nextRotationDirection = 0;
-    //Variable used to make sure snake moved atleast one grid forward after rotating
+    //Variable used to make sure snake moved at least one grid forward after rotating
     //Fixes rotating 180 onto itself
     private bool movedAfterRotation = true;
 
