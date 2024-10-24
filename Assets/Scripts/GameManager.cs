@@ -57,15 +57,19 @@ public class GameManager : MonoBehaviour
         return collider == null;
     }
 
-    GameObject spawnObject(GameObject spawningObject) {
-        float randX = 0.50f*Random.Range(1, width) - 0.25f*(width + 1);
-        float randY = 0.50f*Random.Range(1, height) - 0.25f*(height + 1);
+    GameObject spawnObjectIfEmpty(GameObject spawningObject) {
+        float randX, randY;
+        do
+        {
+            randX = 0.50f*Random.Range(1, width) - 0.25f*(width + 1);
+            randY = 0.50f*Random.Range(1, height) - 0.25f*(height + 1);
+        } while (!isLocationEmpty(randX, randY));
         
         return Instantiate(spawningObject, new Vector3(randX, randY, 0), Quaternion.identity);
     }
     
     void spawnSnake() {
-        GameObject snake = spawnObject(snakePrefab);
+        GameObject snake = spawnObjectIfEmpty(snakePrefab);
         Snake snakeScript = snake.GetComponent<Snake>();
         
         snakeScript.xRange = widthMinMax;
