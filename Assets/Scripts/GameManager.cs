@@ -5,15 +5,18 @@ using UnityEngine.Assertions;
 
 public class GameManager : MonoBehaviour
 {
+    GameObject board;
     [SerializeField] int width = 16;
     [SerializeField] int height = 10;
 
     float[] widthMinMax;
     float[] heightMinMax;
-
-    public GameObject snakePrefab;
+    
     new GameObject camera;
-    GameObject board;
+    public GameObject snakePrefab;
+    public GameObject eggPrefab;
+    int maxFoodCount = 3;
+    public int currentFoodCount = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +36,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (currentFoodCount < maxFoodCount) {
+            currentFoodCount++;
+            spawnObjectIfEmpty(eggPrefab);
+        }
     }
 
     void UpdateCameraAndBoardSize() {
