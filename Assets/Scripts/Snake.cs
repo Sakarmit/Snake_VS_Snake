@@ -27,7 +27,7 @@ public class Snake : MonoBehaviour
     // Snake Info
     [SerializeField] GameObject bodyPrefab;
     Queue<GameObject> bodyElems = new Queue<GameObject>();
-    int size = 3;
+    public int size = 3;
 
     //Temp object to visualize expectedPosition change
     GameObject targetObj;

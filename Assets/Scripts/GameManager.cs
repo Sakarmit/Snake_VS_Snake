@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject snakePrefab;
     public GameObject eggPrefab;
     int maxFoodCount = 3;
-    public int currentFoodCount = 0;
+    public static int currentFoodCount = 0;
 
     // Start is called before the first frame update
     void Start()
