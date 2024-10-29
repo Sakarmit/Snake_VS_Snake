@@ -30,14 +30,10 @@ public class Snake : MonoBehaviour
     Queue<GameObject> bodyElems = new Queue<GameObject>();
     public int size = 3;
 
-    //Temp object to visualize expectedPosition change
-    GameObject targetObj;
-
     void Start()
     {
         expectedGridPosition = transform.position;
         nextPosition = transform.position;
-        targetObj = GameObject.Find("Target");
     }
 
     void Update()
@@ -88,7 +84,6 @@ public class Snake : MonoBehaviour
             nextRotationDirection = 1;
         }
         nextPosition = expectedGridPosition + 0.5f * transform.up.normalized;
-        targetObj.transform.position = expectedGridPosition;
     }
 
     void updatePosition() {

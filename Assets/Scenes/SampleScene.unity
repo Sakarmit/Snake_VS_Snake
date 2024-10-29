@@ -359,7 +359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &885471269
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -421,7 +421,7 @@ Transform:
   m_GameObject: {fileID: 885471268}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.2756687, y: -0.665931, z: 0}
+  m_LocalPosition: {x: 4.16, y: -1.65, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -475,7 +475,6 @@ MonoBehaviour:
   height: 9
   snakePrefab: {fileID: 6189680144423841710, guid: 7ddd5abe83ae851448a35a812e72df50, type: 3}
   eggPrefab: {fileID: 774171276208935012, guid: a4c3f7ed778e54e4c8c94a74c743a704, type: 3}
-  currentFoodCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
