@@ -75,6 +75,12 @@ public class Snake : MonoBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D collider) {
+        if(collider.gameObject.tag == "Snake") {
+            Time.timeScale = 0;
+        }
+    }
+
     void getInput() {
         if (Input.GetKeyDown(inputKeys[rightKeyIndex])) {
             nextRotationDirection = -1;
@@ -105,7 +111,6 @@ public class Snake : MonoBehaviour
         if (newPos.y - yRange[1] > loopTolerance) {
             newPos.y = ((newPos.y + yRange[0])%(2*yRange[1]))+yRange[0]-0.5f;
         } else if (yRange[0] - newPos.y > loopTolerance) {
-            print($"B: {newPos.y} < {yRange[0]} - {newPos.y < yRange[0]}");
             newPos.y = ((newPos.y + yRange[1])%(2*yRange[1]))+yRange[1]+0.5f;
         } 
 
