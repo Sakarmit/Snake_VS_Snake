@@ -24,7 +24,7 @@ public class Snake : MonoBehaviour
     Vector3 expectedGridPosition, nextPosition;
     private float satisfactionDistance = 0.09f;
     float loopTolerance = 0.02f;
-
+    
     // Snake Info
     [SerializeField] GameObject bodyPrefab;
     Queue<GameObject> bodyElems = new Queue<GameObject>();
@@ -73,7 +73,7 @@ public class Snake : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collider) {
         if(collider.gameObject.tag == "Snake") {
-            Time.timeScale = 0;
+            deathSequence();
         }
     }
 
@@ -109,11 +109,21 @@ public class Snake : MonoBehaviour
             newPos.y = ((newPos.y + yRange[1])%(2*yRange[1]))+yRange[1]+0.5f;
         } 
 
-        //If snaked was looped update all position variables
+        //If snake was looped update all position variables
         if (transform.position != newPos) {
             expectedGridPosition = expectedGridPosition + newPos - transform.position;
             nextPosition = nextPosition + newPos - transform.position;
             transform.position = newPos;
         }
+    }
+
+    void deathSequence() {
+        //Destroy body
+        while (bodyElems.Count > 0) {
+            Destroy(bodyElems.Dequeue());
+        }
+        GameManager.snakeCount--;
+        //Destroy snake (head)
+        Destroy(gameObject);
     }
 }

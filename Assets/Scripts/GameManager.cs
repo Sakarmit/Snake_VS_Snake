@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     
     new GameObject camera;
     public GameObject snakePrefab;
+    public static int snakeCount = 0;
     public GameObject eggPrefab;
     int maxFoodCount = 3;
     public static int currentFoodCount = 0;
@@ -39,6 +40,10 @@ public class GameManager : MonoBehaviour
         if (currentFoodCount < maxFoodCount) {
             currentFoodCount++;
             spawnObjectIfEmpty(eggPrefab);
+        }
+
+        if (snakeCount <= 1) {
+            Time.timeScale = 0;
         }
     }
 
@@ -80,5 +85,7 @@ public class GameManager : MonoBehaviour
         
         snakeScript.xRange = widthMinMax;
         snakeScript.yRange = heightMinMax;
+
+        snakeCount++;
     }
 }
