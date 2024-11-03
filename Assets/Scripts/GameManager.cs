@@ -42,9 +42,9 @@ public class GameManager : MonoBehaviour
             spawnObjectIfEmpty(eggPrefab);
         }
 
-        if (snakeCount <= 1) {
-            Time.timeScale = 0;
-        }
+        // if (snakeCount <= 1) {
+        //     Time.timeScale = 0;
+        // }
     }
 
     void UpdateCameraAndBoardSize() {
