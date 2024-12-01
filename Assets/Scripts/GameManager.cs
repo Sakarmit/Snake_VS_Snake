@@ -6,8 +6,8 @@ using UnityEngine.Assertions;
 public class GameManager : MonoBehaviour
 {
     GameObject board;
-    [SerializeField] int width = 16;
-    [SerializeField] int height = 10;
+    [SerializeField] int width;
+    [SerializeField] int height;
 
     float[] widthMinMax;
     float[] heightMinMax;
@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        width = Global.width;
+        height = Global.height;
+
         //Get camera
         camera = GameObject.Find("Main Camera");
 
