@@ -101,8 +101,7 @@ public class Snake : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collider) {
         if(collider.gameObject.tag == "Snake") {
-            Time.timeScale = 0;
-            // deathSequence();
+            deathSequence();
         }
     }
 
@@ -146,12 +145,13 @@ public class Snake : MonoBehaviour
     }
 
     void deathSequence() {
-        //Destroy body
-        while (bodyElems.Count > 0) {
-            Destroy(bodyElems.Dequeue());
+        //Grey out body
+        foreach (var bodyElem in bodyElems) {
+            bodyElem.GetComponent<SpriteRenderer>().color = Color.grey;
         }
-        GameManager.snakeCount--;
-        //Destroy snake (head)
-        Destroy(gameObject);
+        //Grey out head
+        GetComponent<SpriteRenderer>().color = Color.grey;
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("GameOverScene");
     }
 }
