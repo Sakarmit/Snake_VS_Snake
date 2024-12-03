@@ -1,22 +1,15 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class Snake : MonoBehaviour
+public class AISnake : MonoBehaviour
 {
     // Grid related vars
     public float[] xRange = new float[2];
     public float[] yRange = new float[2];
 
-    // Rotation related vars
-    private KeyCode[] inputKeys = new KeyCode[] {KeyCode.W, KeyCode.D, KeyCode.S, KeyCode.A};
-    private int leftKeyIndex = 3;
-    private int rightKeyIndex= 1;
     // Should only ever me -1 (left), 0 (none), or 1 (right)
     private int nextRotationDirection = 0;
-
     bool rotateAtNextGrid = false;
 
     //Positioning/Movement related vars
@@ -35,17 +28,21 @@ public class Snake : MonoBehaviour
     bool rotationModifier = false;
     public int size;
 
+    public ObjectTypes[,] worldView;
+    // Start is called before the first frame update
     void Start()
     {
-        size = Global.snakeSize;
         expectedGridPosition = transform.position;
-        getInput();
+        size = Global.snakeSize;
+        worldView = new ObjectTypes[Global.width,Global.height];
     }
 
+    // Update is called once per frame
     void Update()
     {
-        getInput();
+        
     }
+
     void FixedUpdate() {
         updatePosition();
         float distanceFromExpectedPosition = Vector3.Distance(transform.position, expectedGridPosition);
@@ -73,13 +70,10 @@ public class Snake : MonoBehaviour
             lastBody = Instantiate(bodyPrefab, transform.position, Quaternion.Euler(newBodyRotation));
             bodyElems.Enqueue(lastBody);
             bodyPrefab.GetComponent<SpriteRenderer>().sprite = straightBody;
+            bodyPrefab.GetComponent<SpriteRenderer>().color = Color.red;
 
             if (rotateAtNextGrid) {
                 transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
-
-                //If the snaked needs to be rotated then rotating and updating input keys
-                rightKeyIndex = (rightKeyIndex + nextRotationDirection + 2) % 4;
-                leftKeyIndex = (leftKeyIndex + nextRotationDirection + 2) % 4;
                 
                 expectedGridPosition = transform.position + 0.5f * transform.up.normalized;
                 nextPosition = expectedGridPosition;
@@ -104,15 +98,6 @@ public class Snake : MonoBehaviour
         if(collider.gameObject.tag == "Snake") {
             deathSequence();
         }
-    }
-
-    void getInput() {
-        if (Input.GetKeyDown(inputKeys[rightKeyIndex])) {
-            nextRotationDirection = -1;
-        } else if (Input.GetKeyDown(inputKeys[leftKeyIndex])) {
-            nextRotationDirection = 1;
-        }
-        nextPosition = expectedGridPosition + 0.5f * transform.up.normalized;
     }
 
     void updatePosition() {
@@ -153,6 +138,7 @@ public class Snake : MonoBehaviour
         //Grey out head
         GetComponent<SpriteRenderer>().color = Color.grey;
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameOverScene");
+        GameManager.snakeAICount--;
+        Destroy(gameObject);
     }
 }

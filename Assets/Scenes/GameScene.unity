@@ -474,6 +474,7 @@ MonoBehaviour:
   width: 16
   height: 9
   snakePrefab: {fileID: 6189680144423841710, guid: 7ddd5abe83ae851448a35a812e72df50, type: 3}
+  snakeAIPrefab: {fileID: 6189680144423841710, guid: 9f9ee442a3a18e24d8f3860240a1faa4, type: 3}
   eggPrefab: {fileID: 774171276208935012, guid: a4c3f7ed778e54e4c8c94a74c743a704, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
