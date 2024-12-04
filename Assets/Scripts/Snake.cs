@@ -40,6 +40,7 @@ public class Snake : MonoBehaviour
         size = Global.snakeSize;
         expectedGridPosition = transform.position;
         getInput();
+        print(gameObject.name);
     }
 
     void Update()
@@ -101,7 +102,7 @@ public class Snake : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D collider) {
-        if(collider.gameObject.tag == "Snake") {
+        if(collider.gameObject.tag == "Snake" || collider.gameObject.tag == "SnakeBody") {
             deathSequence();
         }
     }

@@ -95,7 +95,7 @@ public class AISnake : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D collider) {
-        if(collider.gameObject.tag == "Snake") {
+        if(collider.gameObject.tag == "Snake" || collider.gameObject.tag == "SnakeBody") {
             deathSequence();
         }
     }
@@ -127,6 +127,16 @@ public class AISnake : MonoBehaviour
             expectedGridPosition = expectedGridPosition + newPos - transform.position;
             nextPosition = nextPosition + newPos - transform.position;
             transform.position = newPos;
+        }
+    }
+
+    void generateWorldView() {
+        //Generate world view based on current position
+        for (int i = 0; i < Global.width; i++) {
+            for (int j = 0; j < Global.height; j++) {
+                
+                worldView[i,j] = ObjectTypes.Empty;
+            }
         }
     }
 
