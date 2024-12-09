@@ -11,19 +11,21 @@ public class Node {
     public Node nodeParent { get; set; }
 
     public Node(float _x, float _y, float _angle, Vector2 target, Node parent) {
-        if (_angle < -90 || _angle > 180 || _angle % 90 != 0) {
-            if (_angle == -180) {
-                _angle = 180;
-            } else if (_angle == 270) {
-                _angle = -90;
-            } else {
-                throw new ArgumentException("Invalid angle");
-            }
+        if (parent != null && Math.Abs(parent.angle - _angle) > 90) {
+            throw new ArgumentException("Node is behind parent...path finding is wrong");
         }
-        Vector3 looped = GeneralFunctions.loopToBoard(new Vector3(_x, _y, 0));
-        x = looped.x;
-        y = looped.y;
-        angle = _angle;
+
+        if (_angle == -90 || _angle == 0 || _angle == 90 || _angle == 180) {
+            angle = _angle;
+        } else if (_angle == -180) {
+            angle = 180;
+        } else if (_angle == 270) {
+            angle = -90;
+        } else{
+            throw new ArgumentException("Invalid angle");
+        }
+        x = _x;
+        y = _y;
         nodeParent = parent;
         calculateValues(target, parent);
     }
@@ -31,6 +33,9 @@ public class Node {
     public Node(Vector2 position, float _angle, Vector2 target, Node parent)
         : this(position.x, position.y, _angle, target, parent) {}
 
+    public Vector3 vector3Position() {
+        return new Vector3(x, y, 0);
+    }
     public void calculateValues(Vector2 target, Node parentG) {
         float h = GeneralFunctions.manhattanDistance(nextLocation(), new Vector2(x, y));
 		if (parentG != null) {

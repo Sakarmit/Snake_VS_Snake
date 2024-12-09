@@ -40,11 +40,11 @@ public static class GeneralFunctions
 
     public static Vector2 nextLocation(float x, float y, float angle) {
         if (angle == -90 || angle == 270) {
-            return new Vector2(x - 0.5f, y);
+            return new Vector2(x + 0.5f, y);
         } else if (angle == 0) {
             return new Vector2(x, y + 0.5f);
         } else if (angle == 90) {
-            return new Vector2(x + 0.5f, y);
+            return new Vector2(x - 0.5f, y);
         } else if (angle == 180 || angle == -180) {
             return new Vector2(x, y - 0.5f);
         } else {

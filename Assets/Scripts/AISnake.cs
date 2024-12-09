@@ -50,10 +50,8 @@ public class AISnake : MonoBehaviour
         
         if (distanceFromExpectedPosition < satisfactionDistance) {
             loopToBoard();
-            transform.position = expectedGridPosition;
             getNextStep();
-            print(nextPosition);
-            Debug.Break();
+            transform.position = expectedGridPosition;
             expectedGridPosition = nextPosition;
 
             //If last body is not null enable it's collider
@@ -78,22 +76,9 @@ public class AISnake : MonoBehaviour
             if (rotateAtNextGrid) {
                 transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
                 
-                expectedGridPosition = transform.position + 0.5f * transform.up.normalized;
-                nextPosition = expectedGridPosition;
-
                 nextRotationDirection = 0;
                 rotateAtNextGrid = false;
             }
-        } else if (nextRotationDirection != 0) {
-            //Update texture for next body
-            bodyPrefab.GetComponent<SpriteRenderer>().sprite = cornerBody;
-            if (nextRotationDirection == -1) {
-                rotationModifier = true;
-            } else {
-                rotationModifier = false;
-            }
-
-            rotateAtNextGrid = true;
         }
 
         if (lastBody) {
@@ -142,10 +127,14 @@ public class AISnake : MonoBehaviour
                                      Eggs[closestEgg].transform.position.y);
         List<Node> openList = new List<Node>();
         List<Node> closedList = new List<Node>();
-        Node start = new Node(transform.position.x, transform.position.y, 
-                                transform.rotation.z, target, null);
+        Node start = new Node(expectedGridPosition.x, expectedGridPosition.y, 
+                                transform.rotation.eulerAngles.z, target, null);
         openList.Add(start);
+
+        //Loop count used to avoid infinite loop
+        int loopRemaining = 101;
         while(openList.Count > 0) {
+            loopRemaining--;
             //Get node with lowest f value
 			int minFIndex = 0;
 			for (int i = 0; i < openList.Count; i++) { 
@@ -157,13 +146,29 @@ public class AISnake : MonoBehaviour
             Node current = openList[minFIndex];
             openList.RemoveAt(minFIndex);
             closedList.Add(current);
-            if (current.x == target.x && current.y == target.y) {
+            if (current.x == target.x && current.y == target.y || loopRemaining == 0) {
                 Node temp = current;
                 while (temp.nodeParent.nodeParent != null) {
                     temp = temp.nodeParent;
                 }
+
+                if (expectedGridPosition + transform.right.normalized * 0.5f == temp.vector3Position()) {
+                    nextRotationDirection = -1;
+                } else if (expectedGridPosition - transform.right.normalized * 0.5f == temp.vector3Position()) {
+                    nextRotationDirection = 1;
+                }
                 
-                
+                if (nextRotationDirection != 0) {
+                    //Update texture for next body
+                    bodyPrefab.GetComponent<SpriteRenderer>().sprite = cornerBody;
+                    if (nextRotationDirection == -1) {
+                        rotationModifier = true;
+                    } else {
+                        rotationModifier = false;
+                    }
+
+                    rotateAtNextGrid = true;
+                }
 
                 nextPosition = new Vector3(temp.x, temp.y, 0);
                 break;
@@ -175,9 +180,10 @@ public class AISnake : MonoBehaviour
                                     current.angle, target, current));
             children.Add(new Node(GeneralFunctions.nextLocation(current.x, current.y, current.angle + 90),
                                     current.angle + 90, target, current));
+            
             foreach (Node child in children) {
-                print($"Child: {child.x}, {child.y}");
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(child.x, child.y), Vector2.zero);
+                Vector3 looped = GeneralFunctions.loopToBoard(new Vector3(child.x, child.y, 0));
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(looped.x, looped.y), Vector2.zero);
                 if (hit.collider != null && (hit.collider.CompareTag("Snake") || hit.collider.CompareTag("SnakeBody"))) {
                     continue;
                 }
@@ -215,7 +221,6 @@ public class AISnake : MonoBehaviour
     }
 
     void deathSequence() {
-        //Grey out body
         foreach (var bodyElem in bodyElems) {
             Destroy(bodyElem);
         }

@@ -106,7 +106,7 @@ public class Snake : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D collider) {
-        if(collider.gameObject.tag == "Snake" || collider.gameObject.tag == "SnakeBody") {
+        if(collider.gameObject.tag == "SnakeBody") {
             deathSequence();
         }
     }
@@ -139,6 +139,7 @@ public class Snake : MonoBehaviour
     }
 
     void deathSequence() {
+        Global.score = size - Global.snakeSize;
         //Grey out body
         foreach (var bodyElem in bodyElems) {
             bodyElem.GetComponent<SpriteRenderer>().color = Color.grey;

@@ -5,6 +5,7 @@ static class Global {
     public static float[] widthMinMax;
     public static float[] heightMinMax;
     public static float loopTolerance = 0.02f;
+    public static int score = 0;
 }
 
 public enum ObjectTypes {
