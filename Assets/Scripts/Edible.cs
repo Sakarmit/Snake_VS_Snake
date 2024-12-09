@@ -19,8 +19,13 @@ public class Edible : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collider) {
         GameObject gameObj = collider.gameObject;
-        if (gameObj.tag == "Snake") {
+        if (gameObj.name == "Snake (Clone)") {
             Snake snake = gameObj.GetComponent<Snake>();
+            snake.size+=score;
+            GameManager.currentFoodCount--;
+            Destroy(gameObject);
+        } else if (gameObj.name == "AISnake(Clone)") {
+            AISnake snake = gameObj.GetComponent<AISnake>();
             snake.size+=score;
             GameManager.currentFoodCount--;
             Destroy(gameObject);

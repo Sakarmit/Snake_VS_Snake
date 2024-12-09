@@ -14,8 +14,8 @@ public class GameManager : MonoBehaviour
     
     new GameObject camera;
     public GameObject snakePrefab;
-    public GameObject snakeAIPrefab;
-    public static int snakeAICount = 0;
+    public GameObject AISnakePrefab;
+    public static int snakeCount = 0;
     public GameObject eggPrefab;
     int maxFoodCount = 3;
     public static int currentFoodCount = 0;
@@ -46,8 +46,8 @@ public class GameManager : MonoBehaviour
             spawnObjectIfEmpty(eggPrefab);
         }
 
-        if (snakeAICount <= 1) {
-            
+        if (snakeCount <= 1) {
+            spawnAISnake();
         }
     }
 
@@ -63,8 +63,8 @@ public class GameManager : MonoBehaviour
         cameraComp.orthographicSize = Mathf.Max(height * 0.25f, width * 0.140714f);
 
         //Find the centers of min and max grid width and height cells
-        widthMinMax = new float[2] {0.25f - 0.25f*width, 0.25f*width - 0.25f};
-        heightMinMax = new float[2] {0.25f - 0.25f*height, 0.25f*height - 0.25f};
+        Global.widthMinMax = new float[2] {0.25f - 0.25f*width, 0.25f*width - 0.25f};
+        Global.heightMinMax = new float[2] {0.25f - 0.25f*height, 0.25f*height - 0.25f};
     }
 
     bool isLocationEmpty(float x, float y) {
@@ -87,9 +87,13 @@ public class GameManager : MonoBehaviour
         GameObject snake = spawnObjectIfEmpty(snakePrefab);
         Snake snakeScript = snake.GetComponent<Snake>();
         
-        snakeScript.xRange = widthMinMax;
-        snakeScript.yRange = heightMinMax;
+        snakeCount++;
+    }
 
-        snakeAICount++;
+    void spawnAISnake() {
+        GameObject snake = spawnObjectIfEmpty(AISnakePrefab);
+        AISnake AISnakeScript = snake.GetComponent<AISnake>();
+
+        snakeCount++;
     }
 }

@@ -15,7 +15,6 @@ public class AISnake : MonoBehaviour
     //Positioning/Movement related vars
     Vector3 expectedGridPosition, nextPosition;
     private float satisfactionDistance = 0.09f;
-    float loopTolerance = 0.02f;
     
     //Snake body Info
     [SerializeField] GameObject bodyPrefab;
@@ -34,22 +33,27 @@ public class AISnake : MonoBehaviour
     {
         expectedGridPosition = transform.position;
         size = Global.snakeSize;
+        xRange = Global.widthMinMax;
+        yRange = Global.heightMinMax;
         worldView = new ObjectTypes[Global.width,Global.height];
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void FixedUpdate() {
         updatePosition();
         float distanceFromExpectedPosition = Vector3.Distance(transform.position, expectedGridPosition);
-
+        
         if (distanceFromExpectedPosition < satisfactionDistance) {
             loopToBoard();
             transform.position = expectedGridPosition;
+            getNextStep();
+            print(nextPosition);
+            Debug.Break();
             expectedGridPosition = nextPosition;
 
             //If last body is not null enable it's collider
@@ -70,7 +74,6 @@ public class AISnake : MonoBehaviour
             lastBody = Instantiate(bodyPrefab, transform.position, Quaternion.Euler(newBodyRotation));
             bodyElems.Enqueue(lastBody);
             bodyPrefab.GetComponent<SpriteRenderer>().sprite = straightBody;
-            bodyPrefab.GetComponent<SpriteRenderer>().color = Color.red;
 
             if (rotateAtNextGrid) {
                 transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
@@ -91,7 +94,11 @@ public class AISnake : MonoBehaviour
             }
 
             rotateAtNextGrid = true;
-        }      
+        }
+
+        if (lastBody) {
+            bodyPrefab.GetComponent<SpriteRenderer>().color = Color.red;
+        }  
     }
 
     void OnCollisionEnter2D(Collision2D collider) {
@@ -108,19 +115,7 @@ public class AISnake : MonoBehaviour
         );
     }
     void loopToBoard() {
-        //If the snake is off grid move it back on the other size relatively
-        Vector3 newPos = transform.position;
-        if (newPos.x - xRange[1] > loopTolerance) {
-            newPos.x = ((newPos.x + xRange[0])%(2*xRange[1]))+xRange[0]-0.5f;
-        } else if (xRange[0] - newPos.x > loopTolerance) {
-            newPos.x = ((newPos.x + xRange[1])%(2*xRange[1]))+xRange[1]+0.5f;
-        } 
-
-        if (newPos.y - yRange[1] > loopTolerance) {
-            newPos.y = ((newPos.y + yRange[0])%(2*yRange[1]))+yRange[0]-0.5f;
-        } else if (yRange[0] - newPos.y > loopTolerance) {
-            newPos.y = ((newPos.y + yRange[1])%(2*yRange[1]))+yRange[1]+0.5f;
-        } 
+        Vector3 newPos = GeneralFunctions.loopToBoard(transform.position);
 
         //If snake was looped update all position variables
         if (transform.position != newPos) {
@@ -130,12 +125,91 @@ public class AISnake : MonoBehaviour
         }
     }
 
-    void generateWorldView() {
-        //Generate world view based on current position
-        for (int i = 0; i < Global.width; i++) {
-            for (int j = 0; j < Global.height; j++) {
+    void getNextStep() {
+        GameObject[] Eggs = GameObject.FindGameObjectsWithTag("Egg");
+        int closestEgg = 0;
+        float closestDistance = GeneralFunctions.manhattanDistance(transform.position, Eggs[0].transform.position);
+        for (int i = 0; i < Eggs.Length; i++) {
+            float distance = GeneralFunctions.manhattanDistance(transform.position, Eggs[i].transform.position);
+            if (distance < closestDistance) {
+                closestEgg = i;
+                closestDistance = distance;
+            }
+            Eggs[closestEgg].GetComponent<SpriteRenderer>().color = Color.white;
+        }
+        Eggs[closestEgg].GetComponent<SpriteRenderer>().color = Color.green;
+        Vector2 target = new Vector2(Eggs[closestEgg].transform.position.x, 
+                                     Eggs[closestEgg].transform.position.y);
+        List<Node> openList = new List<Node>();
+        List<Node> closedList = new List<Node>();
+        Node start = new Node(transform.position.x, transform.position.y, 
+                                transform.rotation.z, target, null);
+        openList.Add(start);
+        while(openList.Count > 0) {
+            //Get node with lowest f value
+			int minFIndex = 0;
+			for (int i = 0; i < openList.Count; i++) { 
+				if (openList[i].f < openList[minFIndex].f) {
+					minFIndex = i;
+				}
+			}
+
+            Node current = openList[minFIndex];
+            openList.RemoveAt(minFIndex);
+            closedList.Add(current);
+            if (current.x == target.x && current.y == target.y) {
+                Node temp = current;
+                while (temp.nodeParent.nodeParent != null) {
+                    temp = temp.nodeParent;
+                }
                 
-                worldView[i,j] = ObjectTypes.Empty;
+                
+
+                nextPosition = new Vector3(temp.x, temp.y, 0);
+                break;
+            }
+            List<Node> children = new List<Node>();
+            children.Add(new Node(GeneralFunctions.nextLocation(current.x, current.y, current.angle - 90),
+                                    current.angle - 90, target, current));
+            children.Add(new Node(GeneralFunctions.nextLocation(current.x, current.y, current.angle),
+                                    current.angle, target, current));
+            children.Add(new Node(GeneralFunctions.nextLocation(current.x, current.y, current.angle + 90),
+                                    current.angle + 90, target, current));
+            foreach (Node child in children) {
+                print($"Child: {child.x}, {child.y}");
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(child.x, child.y), Vector2.zero);
+                if (hit.collider != null && (hit.collider.CompareTag("Snake") || hit.collider.CompareTag("SnakeBody"))) {
+                    continue;
+                }
+
+                bool skipAfterLoop = false;
+				foreach (Node n in closedList) {
+					if (n.x == child.x && n.y == child.y && n.angle == child.angle) {
+						skipAfterLoop = true;
+						break;
+					}
+				}
+				//If node was in closedList, skip the rest of the loop
+				if (skipAfterLoop) {
+					continue;
+				}
+
+                foreach (Node n in openList) {
+					if (n.x == child.x && n.y == child.y && n.angle == child.angle) {
+						//Since node is in openList, update it if the new g value is lower
+						n.g = child.g;
+						n.f = child.f;
+						n.nodeParent = child.nodeParent;
+						skipAfterLoop = true;
+						break;
+					}
+				}
+                //If  node was in openList and we updated it, skip the rest of the loop
+				if (skipAfterLoop) {
+					continue;
+				}
+
+                openList.Add(child);
             }
         }
     }
@@ -143,12 +217,10 @@ public class AISnake : MonoBehaviour
     void deathSequence() {
         //Grey out body
         foreach (var bodyElem in bodyElems) {
-            bodyElem.GetComponent<SpriteRenderer>().color = Color.grey;
+            Destroy(bodyElem);
         }
-        //Grey out head
-        GetComponent<SpriteRenderer>().color = Color.grey;
 
-        GameManager.snakeAICount--;
+        GameManager.snakeCount--;
         Destroy(gameObject);
     }
 }
