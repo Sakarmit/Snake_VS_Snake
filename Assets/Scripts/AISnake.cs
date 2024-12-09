@@ -72,6 +72,8 @@ public class AISnake : MonoBehaviour
             lastBody = Instantiate(bodyPrefab, transform.position, Quaternion.Euler(newBodyRotation));
             bodyElems.Enqueue(lastBody);
             bodyPrefab.GetComponent<SpriteRenderer>().sprite = straightBody;
+            //Color last body created
+            lastBody.GetComponent<SpriteRenderer>().color = Color.red;
 
             if (rotateAtNextGrid) {
                 transform.RotateAround(transform.position, Vector3.forward, 90*nextRotationDirection);
@@ -79,11 +81,7 @@ public class AISnake : MonoBehaviour
                 nextRotationDirection = 0;
                 rotateAtNextGrid = false;
             }
-        }
-
-        if (lastBody) {
-            bodyPrefab.GetComponent<SpriteRenderer>().color = Color.red;
-        }  
+        } 
     }
 
     void OnCollisionEnter2D(Collision2D collider) {
@@ -111,6 +109,7 @@ public class AISnake : MonoBehaviour
     }
 
     void getNextStep() {
+        //Find closed Egg
         GameObject[] Eggs = GameObject.FindGameObjectsWithTag("Egg");
         int closestEgg = 0;
         float closestDistance = GeneralFunctions.manhattanDistance(transform.position, Eggs[0].transform.position);
@@ -120,9 +119,8 @@ public class AISnake : MonoBehaviour
                 closestEgg = i;
                 closestDistance = distance;
             }
-            Eggs[closestEgg].GetComponent<SpriteRenderer>().color = Color.white;
         }
-        Eggs[closestEgg].GetComponent<SpriteRenderer>().color = Color.green;
+
         Vector2 target = new Vector2(Eggs[closestEgg].transform.position.x, 
                                      Eggs[closestEgg].transform.position.y);
         List<Node> openList = new List<Node>();
@@ -132,7 +130,7 @@ public class AISnake : MonoBehaviour
         openList.Add(start);
 
         //Loop count used to avoid infinite loop
-        int loopRemaining = 101;
+        int loopRemaining = 201;
         while(openList.Count > 0) {
             loopRemaining--;
             //Get node with lowest f value
@@ -146,8 +144,10 @@ public class AISnake : MonoBehaviour
             Node current = openList[minFIndex];
             openList.RemoveAt(minFIndex);
             closedList.Add(current);
+            //Target Found or hit loop limit
             if (current.x == target.x && current.y == target.y || loopRemaining == 0) {
                 Node temp = current;
+                //Find the second step in the path
                 while (temp.nodeParent.nodeParent != null) {
                     temp = temp.nodeParent;
                 }

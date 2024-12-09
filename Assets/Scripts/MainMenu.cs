@@ -30,6 +30,8 @@ public class MainMenu : MonoBehaviour
         }
         Global.width = width;
         Global.height = height;
+        GameManager.snakeCount = 0;
+        GameManager.currentFoodCount = 0;
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
     }
 
